@@ -1,0 +1,37 @@
+[
+  {"id":"logica","title":"Algoritmos y lógica","group":0,"lesson":{"text":"Un algoritmo es una secuencia finita de pasos para resolver un problema. Identifica la entrada, las operaciones y la salida. Traza los pasos en orden para comprobar el resultado.","code":"int minutos = 90;\nint horas = minutos / 60;\nint resto = minutos % 60;\nSystem.out.println(horas + \":\" + resto);","summary":"La división entera da el cociente y % da el resto. Prueba también el caso límite de 60 minutos.","questions":[
+    ["¿Qué representa la entrada en el ejemplo?","La cantidad de minutos","El texto que se imprime","El resto de la división","Busca el dato que conoces antes de calcular nada.","90 es el dato de partida. Las horas y el resto se calculan a partir de él."],
+    ["¿Qué imprime el ejemplo?","1:30","1:0","1:90","Separa el cociente del resto al dividir 90 entre 60.","90 / 60 es 1 y 90 % 60 es 30. El signo + concatena con el texto `:`."],
+    ["Si minutos vale 59, ¿qué imprime?","0:59","1:59","0:0","¿Cuántas veces cabe 60 entero en 59?","El cociente entero es 0 y quedan los 59 minutos completos."]
+  ]}},
+  {"id":"variables","title":"Variables y tipos de datos","group":0,"lesson":{"text":"Una variable local tiene un tipo y debe recibir un valor antes de leerse. Usa int para enteros, double para números con decimales y boolean para condiciones verdaderas o falsas.","code":"int unidades = 3;\ndouble precio = 2.5;\nboolean disponible = unidades > 0;\nSystem.out.println(unidades * precio);","summary":"El tipo indica qué valores admite la variable. Al multiplicar int por double, Java promueve el entero a double.","questions":[
+    ["¿Qué tipo corresponde a disponible?","boolean","int","double","La expresión > produce verdadero o falso.","Las comparaciones dan un boolean: true o false."],
+    ["¿Qué imprime el ejemplo?","7.5","7","6.0","Con un operando double, la multiplicación se hace con decimales.","El 3 se convierte en 3.0 para el cálculo. 3.0 × 2.5 da 7.5."],
+    ["Dentro de un método, ¿qué pasa con int puntos; seguido de System.out.println(puntos);?","El compilador rechaza la lectura","Se imprime 0","Se imprime null","Una declaración local puede no inicializar la variable.","Java exige que una variable local esté asignada antes de leerla."]
+  ]}},
+  {"id":"operadores","title":"Operadores","group":0,"lesson":{"text":"* y / se evalúan antes que + y −. Usa paréntesis para expresar el orden que necesitas. Con operandos int, / descarta la parte fraccionaria.","code":"int total = 2 + 3 * 4;\nint mitad = 7 / 2;\nboolean exacta = 7 % 2 == 0;","summary":"Distingue asignar (=) de comparar (==) y verifica el tipo de los operandos antes de dividir.","questions":[
+    ["¿Qué valor queda en total?","14","20","24","Primero multiplica 3 por 4.","La multiplicación tiene prioridad. Después se suma 2."],
+    ["¿Qué valor queda en mitad?","3","3.5","4","Ambos operandos son int.","El resultado es entero y se trunca hacia cero."],
+    ["¿Qué expresión calcula la mitad exacta de 7 con decimales?","7 / 2.0","(double) (7 / 2)","7 % 2","Convierte un operando antes de dividir.","7 / 2.0 opera con double y produce 3.5. La conversión después de dividir mantendría 3.0."]
+  ]}},
+  {"id":"condicionales","title":"Condicionales","group":1,"lesson":{"text":"Un if ejecuta su bloque cuando la condición es true. Una cadena if / else if / else elige la primera rama aplicable. Pon primero la condición más específica cuando se solapen.","code":"int nota = 8;\nif (nota >= 9) {\n    System.out.println(\"Excelente\");\n} else if (nota >= 5) {\n    System.out.println(\"Aprobado\");\n} else {\n    System.out.println(\"Repasar\");\n}","summary":"Comprueba los límites de cada condición y el orden de las ramas.","questions":[
+    ["¿Qué imprime el ejemplo?","Aprobado","Excelente","Repasar","Compara 8 con 9 y luego con 5.","8 no llega a 9 pero sí a 5, así que ejecuta la segunda rama."],
+    ["Con nota igual a 5, ¿qué rama se ejecuta?","La de Aprobado","La de Repasar","Ninguna","El operador >= incluye la igualdad.","5 >= 5 es true, así que se imprime Aprobado."],
+    ["Si nota vale 10 y ponemos primero nota >= 5, ¿qué se imprime?","Aprobado","Excelente","Ambas líneas","En una cadena se elige la primera condición que se cumple.","10 cumple las dos condiciones. Como >= 5 va primero, solo se ejecuta esa rama."]
+  ]}},
+  {"id":"bucles","title":"Bucles","group":1,"lesson":{"text":"Un for agrupa inicialización, condición de continuación y actualización. Un while comprueba antes de ejecutar el cuerpo. Un do-while comprueba después, por lo que el cuerpo se ejecuta al menos una vez.","code":"int suma = 0;\nfor (int i = 1; i <= 3; i++) {\n    suma += i;\n}\nSystem.out.println(suma);","summary":"Cuenta las iteraciones trazando los valores de inicio y salida. Revisa especialmente < frente a <=.","questions":[
+    ["¿Qué imprime el código?","6","3","10","Anota i y suma en cada iteración.","La suma acumula 1 + 2 + 3. Con i igual a 4 se sale del bucle."],
+    ["¿Qué ocurre si usamos i < 3?","Imprime 3","Imprime 6","Imprime 2","Comprueba si el valor 3 satisface la condición.","Solo entran i=1 e i=2. Su suma es 3."],
+    ["Completa `for (int i = 0; i < 3; ___)` para recorrer 0, 1 y 2.","`i++`","`i--`","`i += 2`","El contador debe avanzar una unidad en cada vuelta.","Con i++ el contador toma los valores 0, 1 y 2. Al llegar a 3, la condición deja de cumplirse."]
+  ]}},
+  {"id":"arrays","title":"Arrays","group":1},
+  {"id":"metodos","title":"Métodos","group":2},
+  {"id":"cadenas","title":"Cadenas","group":2},
+  {"id":"clases","title":"Clases y objetos","group":3},
+  {"id":"constructores","title":"Constructores","group":3},
+  {"id":"encapsulacion","title":"Encapsulación","group":3},
+  {"id":"herencia","title":"Herencia y polimorfismo","group":3},
+  {"id":"colecciones","title":"Colecciones básicas","group":4},
+  {"id":"excepciones","title":"Excepciones","group":4},
+  {"id":"ficheros","title":"Ficheros (según temario)","group":4}
+]

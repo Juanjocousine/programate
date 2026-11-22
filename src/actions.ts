@@ -1,3 +1,4 @@
+import { JAVA_SUBJECT } from "./java";
 import { bank, itemById, itemsForSubject } from "./bank";
 import { examPreparation, scoreLabel, scoreQuestion, selectQuestions } from "../engine/learning21.mjs";
 import { simulationGrade } from "../engine/learning.mjs";
@@ -67,6 +68,7 @@ function current() {
 }
 
 export function handle(act: string, node: HTMLElement) {
+  if (["sim-next", "sim-review", "sim-goto", "sim-back", "sim-submit"].includes(act) && expireSimulation()) return;
   if (act === "dismiss") dismissNotice(node.dataset.id || "");
   else if (act === "theme") cycleTheme();
   else if (act === "preview-legacy") stageImport(localStorage.getItem("mcdam2.progress") || "");
@@ -82,6 +84,10 @@ export function handle(act: string, node: HTMLElement) {
   else if (act === "start-weak") startWeak(node.dataset.id || "");
   else if (act === "learn-concept") startConcept(node.dataset.id || "");
   else if (act === "start-practice") startPractice();
+  else if (act === "start-lab") {
+    const questions = itemsForSubject(JAVA_SUBJECT).filter((item) => item.conceptId === "java-bucles" || item.conceptId === "java-condicionales" || item.id === "java-variables-3");
+    begin("learn", questions.map((item) => item.id), JAVA_SUBJECT);
+  }
   else if (act === "start-sim") startSim();
   else if (act === "forget") {
     clearResume();
@@ -118,7 +124,7 @@ function saveGoal() {
 
 function poolFor(subjectId: string, conceptId = "") {
   return bank.items.filter(
-    (item) => item.kind === "multiple-choice" && item.subjectId === subjectId && (!conceptId || item.conceptId === conceptId),
+    (item) => item.subjectId === subjectId && (!conceptId || item.conceptId === conceptId),
   );
 }
 
@@ -140,7 +146,7 @@ function startDue() {
   const { states, summary } = model();
   const due = bank.items.filter((item) => states[item.id]?.n && states[item.id].due <= Date.now());
   const picked = selectQuestions(due, states, summary, Math.min(20, due.length), { random: () => 0 });
-  begin("due", picked.questions.map((item: any) => item.id), "ad", picked.why);
+  begin("due", picked.questions.map((item: any) => item.id), picked.questions[0]?.subjectId || "ad", picked.why);
 }
 
 function startErrors() {
@@ -182,9 +188,24 @@ function startSim() {
   const count = Number(document.querySelector<HTMLSelectElement>("#sim-count")?.value || 20);
   const pen = document.querySelector<HTMLSelectElement>("#sim-pen")?.value !== "0";
   const multi = document.querySelector<HTMLSelectElement>("#sim-multi")?.value || "prop";
-  patchSettings({ scoring: { pen, multi } });
-  const pool = itemsForSubject("ad").filter((item) => item.kind === "multiple-choice");
-  begin("sim", sample(pool, count).map((item) => item.id), "ad", {}, { pen, multi });
+  const subjectId = document.querySelector<HTMLSelectElement>("#sim-subject")?.value || "ad";
+  const conceptId = document.querySelector<HTMLSelectElement>("#sim-concept")?.value || "";
+  const minutes = Number(document.querySelector<HTMLSelectElement>("#sim-time")?.value || 0);
+  const cfg = subjectId === "ad" ? { pen, multi } : { pen: false, multi: "none" };
+  if (subjectId === "ad") patchSettings({ scoring: cfg });
+  const pool = poolFor(subjectId, conceptId).filter((item) => item.kind === "multiple-choice");
+  begin("sim", sample(pool, count).map((item) => item.id), subjectId, {}, {
+    ...cfg,
+    ...(minutes ? { deadline: Date.now() + minutes * 60_000 } : {}),
+  });
+}
+
+export function expireSimulation() {
+  const resume = getProgress().resume;
+  if (resume?.mode !== "sim" || resume.stage === "done" || !resume.cfg?.deadline || Date.now() < resume.cfg.deadline) return false;
+  submitSim();
+  setFlash("Tiempo agotado. Se han corregido las respuestas guardadas.");
+  return true;
 }
 
 function answerKey(resume: any, itemId: string, index: number) {
@@ -201,12 +222,16 @@ function check(blank: boolean) {
   }
   const scored = scoreQuestion(cursor.item, sel, { pen: false, multi: "none" });
   const retries = cursor.resume.retries?.[cursor.item.id] || 0;
-  const rt = retries > 0;
+  const key = answerKey(cursor.resume, cursor.item.id, cursor.index);
+  const previous = cursor.resume.answers[key];
+  if (previous?.done && !previous.hint) return;
+  const rt = retries > 0 || !!previous?.hint;
   recordAnswer(cursor.item, scored.r, scored.r === "o" ? 1 : 0, cursor.resume.mode === "due" ? "due" : "apr", rt, false);
-  const answers = { ...cursor.resume.answers, [answerKey(cursor.resume, cursor.item.id, cursor.index)]: { sel, ...scored, done: 1, rt } };
+  const hint = cursor.item.subjectId === JAVA_SUBJECT && scored.r === "k" && !rt;
+  const answers = { ...cursor.resume.answers, [key]: { sel, ...scored, done: 1, rt, ...(hint ? { hint: true } : {}) } };
   const nextRetries = { ...cursor.resume.retries };
   let ids = cursor.resume.ids;
-  if (cursor.resume.mode === "errors" && scored.r !== "o") {
+  if (cursor.resume.mode === "errors" && cursor.item.subjectId !== JAVA_SUBJECT && scored.r !== "o") {
     nextRetries[cursor.item.id] = retries + 1;
     if (nextRetries[cursor.item.id] <= 3) ids = ids.slice(0, cursor.index + 1).concat(cursor.item.id, ids.slice(cursor.index + 1));
   }
@@ -270,7 +295,7 @@ function jump(index: number) {
 
 function submitSim() {
   const resume = getProgress().resume;
-  if (!resume) return;
+  if (resume?.mode !== "sim" || resume.stage === "done") return;
   const cfg = resume.cfg || { pen: true, multi: "prop" };
   const rows = resume.ids.map((id: string) => {
     const question = itemById(id);
@@ -280,10 +305,11 @@ function submitSim() {
   });
   const grade = simulationGrade(rows.map((row: any) => row.sc));
   const hasMulti = rows.some((row: any) => (row.question?.correct || []).length > 1 || row.question?.multiple);
-  const label = scoreLabel("ad", cfg, hasMulti);
+  const subjectId = resume.subjectId || "ad";
+  const label = scoreLabel(subjectId, cfg, hasMulti);
   const sim = {
     t: Date.now(),
-    subjectId: "ad",
+    subjectId,
     kind: "sim",
     n: grade.n,
     score: grade.score,
@@ -298,7 +324,7 @@ function submitSim() {
     sim,
     rows.filter((row: any) => row.question).map((row: any) => ({ question: row.question, result: row.r, points: row.sc })),
   );
-  const prep = examPreparation(getProgress().sims, "ad", bank.concepts.filter((concept) => concept.subjectId === "ad").length);
+  const prep = examPreparation(getProgress().sims, subjectId, bank.concepts.filter((concept) => concept.subjectId === subjectId).length);
   setResume({
     ...resume,
     stage: "done",

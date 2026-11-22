@@ -1,7 +1,9 @@
+import { academyHome, achievements, exams, icon, lab, lessons, routeJava, subjectLinks } from "./academy";
+import { JAVA_SUBJECT, units } from "./java";
 import catalog from "../config/plans.study.json";
-import { ACHIEVEMENT_LABELS, levelFromXp, xpIntoLevel, XP_PER_LEVEL } from "../engine/xp.mjs";
-import { examPreparation, recommendNext, recurringConfusions, scoreLabel, weakSubconcepts } from "../engine/learning21.mjs";
-import { isDue, questionLevel, ymd } from "../engine/learning.mjs";
+import { ACHIEVEMENT_LABELS, levelFromXp } from "../engine/xp.mjs";
+import { examPreparation, recurringConfusions, scoreLabel, weakSubconcepts } from "../engine/learning21.mjs";
+import { isDue, ymd } from "../engine/learning.mjs";
 import { bank, conceptById, itemById, itemsForConcept, itemsForSubject, subconceptById, subjectName } from "./bank";
 import { esc, formatGrade, formatWhen, rich } from "./format";
 import { consumeFlash, getCorrupt, getNotices, getPending, getProgress, legacyAvailable, model } from "./store";
@@ -25,35 +27,44 @@ const plans = catalog as {
   plans: { id: string; name: string; prices: { amountCents: number; priceStatus: string }[]; grants: Record<string, { enabled: boolean; limit?: number }> }[];
 };
 
-function nav(current: string) {
+function shell(current: string, body: string) {
   const links = [
-    ["/", "Inicio"],
-    ["/rutas", "Rutas"],
-    ["/practicar", "Practicar"],
-    ["/simulacro", "Simulacro"],
-    ["/repaso", "Repaso"],
-    ["/progreso", "Progreso"],
-    ["/planes", "Planes"],
+    ["/", "Inicio", "house"], ["/mi-ruta", "Mi ruta", "layers"],
+    ["/lecciones", "Lecciones", "book-open"], ["/practicar", "Ejercicios", "code-xml"],
+    ["/laboratorio", "Laboratorio", "flask-conical"], ["/simulacro", "Simulacros", "target"],
+    ["/examenes", "Exámenes", "calendar-days"], ["/progreso", "Progreso", "chart-no-axes-column-increasing"],
+    ["/logros", "Logros", "trophy"], ["/planes", "Planes", "credit-card"],
   ];
-  return `<nav class="nav" aria-label="Secciones">${links
-    .map(
-      ([href, label]) =>
-        `<a href="#${href}" ${current === href ? 'aria-current="page"' : ""}>${label}</a>`,
-    )
-    .join("")}</nav>`;
+  const progress = getProgress();
+  const flash = consumeFlash();
+  const today = ymd(Date.now());
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const streak = [today, ymd(yesterday)].includes(progress.streak.lastDay) ? progress.streak.count : 0;
+  return `<a class="skip" href="#contenido" data-skip>Saltar al contenido</a>
+    <aside class="sidebar">
+      <a class="brand" href="#/">${icon("code-xml")}<span>Programate<small>Aprende · Practica · Aprueba</small></span></a>
+      <nav class="nav" aria-label="Secciones">${links.map(([href, label, glyph]) => `<a href="#${href}" ${current === href ? 'aria-current="page"' : ""}>${icon(glyph)}${label}</a>`).join("")}</nav>
+      <nav class="side-subjects" aria-label="Asignaturas"><p>Mis asignaturas</p>${subjectLinks()}</nav>
+      <a class="side-settings" href="#/ajustes">${icon("settings")} Configuración</a>
+    </aside>
+    <header class="top">
+      <a class="brand mobile-brand" href="#/">${icon("code-xml")} Programate</a>
+      <div class="global-search">${icon("search")}<input id="search" type="search" aria-label="Buscar temas, ejercicios o conceptos" placeholder="Buscar temas, ejercicios o conceptos…"><div id="search-out" aria-live="polite"></div></div>
+      <div class="top-stats">
+        <a href="#/progreso"><span class="flame" aria-hidden="true">🔥</span><span>Racha<strong>${streak} ${streak === 1 ? "día" : "días"}</strong></span></a>
+        <a href="#/progreso">${icon("boxes", "xp-icon")}<span>XP<strong>${progress.xp.toLocaleString("es-ES")}</strong></span></a>
+        <a href="#/logros">${icon("shield", "level-icon")}<span>Nivel<strong>${levelFromXp(progress.xp)}</strong></span></a>
+      </div>
+      <div class="top-actions"><a href="#/repaso" aria-label="Repasos">${icon("bell")}</a><a class="profile" href="#/ajustes" aria-label="Configuración de estudio">${icon("user-round")}</a></div>
+    </header>
+    <main id="contenido" tabindex="-1" class="${current === "/" ? "home-page" : "inner-page"}">${notices()}${flash ? `<div class="banner" role="status"><p>${esc(flash)}</p></div>` : ""}${body}</main>`;
 }
 
-function shell(current: string, body: string) {
-  const theme = getProgress().settings.theme;
-  const themeLabel = theme === "dark" ? "Oscuro" : theme === "light" ? "Claro" : "Automático";
-  const flash = consumeFlash();
-  return `<a class="skip" href="#contenido">Saltar al contenido</a>
-  <header class="top">
-    <a class="brand" href="#/">Programate</a>
-    <button class="btn ghost" type="button" data-act="theme">Tema: ${themeLabel}</button>
-  </header>
-  ${nav(current)}
-  <main id="contenido">${notices()}${flash ? `<div class="banner" role="status"><p>${esc(flash)}</p></div>` : ""}${body}</main>`;
+function settings() {
+  const settings = getProgress().settings;
+  const themeLabel = settings.theme === "dark" ? "Oscuro" : settings.theme === "light" ? "Claro" : "Academia";
+  return `<section class="screen-title"><h1>Configuración</h1><p class="lead">Preferencias de estudio de este dispositivo.</p></section><section class="card stack-form"><label for="goal">Objetivo diario en XP</label><input id="goal" type="number" min="10" max="200" value="${settings.dailyGoal}"><div class="row"><button class="btn" type="button" data-act="save-goal">Guardar objetivo</button><button class="btn ghost" type="button" data-act="theme">Tema: ${themeLabel}</button><a href="#/progreso">Gestionar copia de progreso</a></div></section>`;
 }
 
 function notices() {
@@ -90,44 +101,24 @@ function dueItems(states: Record<string, any>) {
   return bank.items.filter((item) => isDue(states[item.id], now));
 }
 
-function pendingItems(states: Record<string, any>) {
-  return bank.items.filter((item) => {
-    const state = states[item.id];
-    return state && state.n && (state.pend || state.lastRes !== "o");
-  });
-}
-
-function advice(states: Record<string, any>, summary: any) {
-  const weak = weakSubconcepts(summary)[0];
-  const weakName = weak ? subconceptById(weak.id)?.title || conceptById(weak.id)?.title || weak.id : "";
-  return recommendNext({
-    logLength: getProgress().log.length,
-    dueCount: dueItems(states).length,
-    pendingCount: pendingItems(states).length,
-    weakName,
-    unseenCount: bank.items.filter((item) => item.subjectId === "ad" && !states[item.id]?.n).length,
-  });
-}
-
 export function render(path: string) {
   const parts = path.split("/").filter(Boolean);
   const root = parts[0] || "";
-  const current =
-    root === ""
-      ? "/"
-      : root === "ruta" || root === "concepto" || root === "glosario"
-        ? "/rutas"
-        : root === "sesion"
-          ? "/practicar"
-          : `/${root}`;
+  const current = root === "sesion" ? "/practicar" : `/${root}`;
   let body = "";
-  if (!root) body = home();
+  if (!root) body = academyHome();
+  else if (root === "mi-ruta") body = routeJava(parts[1]);
+  else if (root === "lecciones") body = lessons(parts[1]);
+  else if (root === "laboratorio") body = lab();
+  else if (root === "examenes") body = exams();
+  else if (root === "logros") body = achievements();
+  else if (root === "ajustes") body = settings();
   else if (root === "rutas") body = routes();
   else if (root === "ruta") body = routePage(parts[1] || "");
   else if (root === "concepto") body = conceptPage(parts[1] || "");
   else if (root === "glosario") body = glossaryPage(parts[1] || "");
   else if (root === "practicar") body = practice();
-  else if (root === "simulacro") body = simSetup();
+  else if (root === "simulacro") body = simSetup(parts[1] === "java" ? JAVA_SUBJECT : "ad");
   else if (root === "repaso") body = review();
   else if (root === "progreso") body = progressPage();
   else if (root === "planes") body = plansPage();
@@ -136,83 +127,28 @@ export function render(path: string) {
   return shell(current, body);
 }
 
-function home() {
-  const { progress, states, summary, days } = model();
-  const next = advice(states, summary);
-  const due = dueItems(states).length;
-  const resume = progress.resume;
-  const recent = Object.entries(days).slice(-7);
-  const max = Math.max(1, ...recent.map(([, day]) => day.o + day.k + day.b));
-  return `<section class="hero">
-    <p class="kicker">Estudio en este dispositivo</p>
-    <h1>Hola. Hoy puedes seguir con Acceso a Datos.</h1>
-    <p class="lead">Nivel ${levelFromXp(progress.xp)} · ${progress.xp} XP · racha ${progress.streak.count} ${progress.streak.count === 1 ? "día" : "días"}. El objetivo de hoy es opcional: ${progress.xpByDay[ymd(Date.now())] || 0} de ${progress.settings.dailyGoal} XP.</p>
-    <div class="bar" aria-hidden="true"><span style="width:${(xpIntoLevel(progress.xp) / XP_PER_LEVEL) * 100}%"></span></div>
-  </section>
-  <section class="grid">
-    <article class="card accent">
-      <p class="kicker">Siguiente</p>
-      <h2>${esc(next.title)}</h2>
-      <p>${esc(next.detail)}</p>
-      <button type="button" class="btn" data-act="start-next" data-kind="${esc(next.kind)}">Empezar</button>
-    </article>
-    <article class="card">
-      <p class="kicker">Continuar</p>
-      ${
-        resume?.stage === "done"
-          ? `<h2>Resultado sin cerrar</h2><p>La última sesión ya está guardada.</p><a class="btn" href="#/sesion">Ver resultado</a>`
-          : resume
-          ? `<h2>Sesión a medias</h2><p>${esc(resume.ids.length)} preguntas, vas por la ${Math.min(resume.index + 1, resume.ids.length)}.</p><a class="btn" href="#/sesion">Seguir</a>`
-          : `<h2>No hay una sesión abierta</h2><p>Cuando empieces una, podrás cerrar el navegador y volver al mismo punto.</p><a class="btn ghost" href="#/practicar">Elegir práctica</a>`
-      }
-    </article>
-  </section>
-  <section class="grid three">
-    <article class="card"><b>${due}</b><span>repasos para hoy</span></article>
-    <article class="card"><b>${pendingItems(states).length}</b><span>errores pendientes</span></article>
-    <article class="card"><b>${bank.items.filter((item) => item.subjectId === "ad").length}</b><span>preguntas de Acceso a Datos</span></article>
-  </section>
-  <section class="card">
-    <h2>Buscar en el banco</h2>
-    <label for="search">Concepto, término o enunciado</label>
-    <input id="search" type="search" placeholder="Por ejemplo, ArrayList">
-    <div id="search-out"></div>
-  </section>
-  <section class="card">
-    <h2>Últimos días</h2>
-    ${
-      recent.length
-        ? `<div class="bars">${recent
-            .map(([day, row]) => {
-              const total = row.o + row.k + row.b;
-              return `<div><span style="height:${(total / max) * 72}px" title="${esc(day)}: ${total}"></span><small>${esc(day.slice(8))}</small></div>`;
-            })
-            .join("")}</div>`
-        : `<p class="muted">Todavía no hay respuestas. El gráfico aparece con la primera.</p>`
-    }
-  </section>`;
-}
-
 export function searchHtml(query: string) {
-  const text = query.trim().toLowerCase();
+  const normalize = (value: string) => value.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+  const text = normalize(query.trim());
   if (text.length < 2) return "";
-  const concepts = bank.concepts.filter((concept) => concept.title.toLowerCase().includes(text)).slice(0, 6);
-  const terms = bank.terms.filter((term) => term.title.toLowerCase().includes(text)).slice(0, 6);
-  const items = bank.items.filter((item) => item.stem.toLowerCase().includes(text)).slice(0, 6);
-  if (!concepts.length && !terms.length && !items.length) return `<p class="muted">Nada en el banco con ese texto.</p>`;
-  return `<ul class="results">${concepts
+  const concepts = bank.concepts.filter((concept) => concept.subjectId !== JAVA_SUBJECT && normalize(concept.title).includes(text)).slice(0, 6);
+  const terms = bank.terms.filter((term) => normalize(term.title).includes(text)).slice(0, 6);
+  const items = bank.items.filter((item) => normalize(item.stem).includes(text)).slice(0, 6);
+  const lessons = units.filter((unit) => unit.lesson && normalize(unit.title).includes(text));
+  if (!lessons.length && !concepts.length && !terms.length && !items.length) return `<p class="muted">Nada en el banco con ese texto.</p>`;
+  return `<ul class="results">${lessons.map((unit) => `<li><a href="#/lecciones/${unit.id}">${esc(unit.title)}</a><span>Lección</span></li>`).join("")}${concepts
     .map((concept) => `<li><a href="#/concepto/${esc(concept.id)}">${esc(concept.title)}</a><span>Concepto</span></li>`)
     .join("")}${terms
     .map((term) => `<li><a href="#/glosario/${esc(term.subjectId)}">${esc(term.title)}</a><span>Diccionario</span></li>`)
     .join("")}${items
-    .map((item) => `<li><a href="#/concepto/${esc(item.conceptId)}">${esc(item.stem.slice(0, 140))}</a><span>${esc(item.id)}</span></li>`)
+    .map((item) => `<li><a href="${item.subjectId === JAVA_SUBJECT ? `#/lecciones/${esc(item.conceptId.slice(5))}` : `#/concepto/${esc(item.conceptId)}`}">${esc(item.stem.slice(0, 140))}</a><span>${esc(item.id)}</span></li>`)
     .join("")}</ul>`;
 }
 
 function routes() {
-  const ready = bank.subjects.filter((subject) => itemsForSubject(subject.id).length);
+  const ready = bank.subjects.filter((subject) => subject.id !== JAVA_SUBJECT && itemsForSubject(subject.id).length);
   const java = bank.concepts.filter((concept) => concept.routes.includes("pro.java"));
-  return `<section><h1>Rutas</h1><p class="lead">Solo aparece contenido que está en el banco de la versión 2.1. Lo demás queda como próximo, sin lecciones inventadas.</p></section>
+  return `<section><h1>Asignaturas y rutas</h1><p class="lead">Piloto de Programación y banco de práctica DAM 2.1.</p></section><a href="#/mi-ruta" class="card link">Programación de 1.º DAM · Piloto de Java ${icon("arrow-right")}</a>
   <div class="stack">
     ${ready
       .map((subject) => {
@@ -339,8 +275,8 @@ function glossaryPage(id: string) {
 }
 
 function practice() {
-  const subjects = bank.subjects.filter((subject) => itemsForSubject(subject.id).length);
-  return `<section><h1>Practicar</h1><p class="lead">La práctica puntúa 1 o 0, sin la penalización del examen. Al final puedes repasar solo los fallos.</p></section>
+  const subjects = bank.subjects.filter((subject) => itemsForSubject(subject.id).length).reverse();
+  return `<section><h1>Ejercicios</h1><p class="lead">La práctica puntúa 1 o 0, sin la penalización del examen. Al final puedes repasar solo los fallos.</p></section>
   <form class="card stack-form" id="practice-form">
     <label for="practice-subject">Asignatura</label>
     <select id="practice-subject">${subjects.map((subject) => `<option value="${esc(subject.id)}">${esc(subject.name)}</option>`).join("")}</select>
@@ -357,14 +293,19 @@ function practice() {
   </form>`;
 }
 
-function simSetup() {
+function simSetup(subjectId: string) {
   const scoring = getProgress().settings.scoring;
   const label = scoreLabel("ad", scoring, true);
-  return `<section><h1>Simulacro de Acceso a Datos</h1><p class="lead">${esc(label.text)}</p></section>
+  const subjects = bank.subjects.filter((subject) => itemsForSubject(subject.id).some((item) => item.kind === "multiple-choice"));
+  return `<section class="screen-title"><h1>Simulacros</h1><p class="lead">Prepara el examen con preguntas del banco DAM y del piloto Java.</p><div class="row"><a href="#/practicar">Modo práctica</a><a href="#/examenes">Plan de exámenes</a></div></section>
   <form class="card stack-form">
+    <label for="sim-subject">Asignatura</label>
+    <select id="sim-subject">${subjects.map((subject) => `<option value="${esc(subject.id)}" ${subject.id === subjectId ? "selected" : ""}>${esc(subject.name)}</option>`).join("")}</select>
+    <label for="sim-concept">Tema</label><select id="sim-concept"><option value="">Todos los temas</option>${bank.concepts.filter((concept) => subjects.some((subject) => subject.id === concept.subjectId)).map((concept) => `<option value="${esc(concept.id)}" data-subject="${esc(concept.subjectId)}" ${concept.subjectId === subjectId ? "" : "hidden"}>${esc(concept.title)}</option>`).join("")}</select>
+    <label for="sim-time">Temporizador</label><select id="sim-time"><option value="0">Sin límite</option><option value="5">5 minutos</option><option value="15">15 minutos</option><option value="30">30 minutos</option></select>
     <label for="sim-count">Preguntas de opción</label>
     <select id="sim-count"><option>10</option><option selected>20</option><option>30</option></select>
-    <label for="sim-pen">Penalización de las preguntas únicas</label>
+    <details class="sim-ad" ${subjectId === "ad" ? "open" : "hidden"}><summary>Reglas de puntuación de Acceso a Datos</summary><p class="muted">${esc(label.text)}</p><label for="sim-pen">Penalización de las preguntas únicas</label>
     <select id="sim-pen"><option value="1" ${scoring.pen ? "selected" : ""}>Sí, −0,33 (regla confirmada)</option><option value="0" ${scoring.pen ? "" : "selected"}>No, modo práctica</option></select>
     <label for="sim-multi">Preguntas con varias respuestas</label>
     <select id="sim-multi">
@@ -373,17 +314,18 @@ function simSetup() {
       <option value="none" ${scoring.multi === "none" ? "selected" : ""}>Sin penalización</option>
     </select>
     <p class="muted">No hay un número oficial de preguntas ni una fórmula múltiple escrita. La nota es una orientación con la regla que elijas, no un examen oficial.</p>
+    </details><p class="muted">Para las demás asignaturas cada acierto suma un punto. Los resultados son orientativos.</p>
     <button class="btn" type="button" data-act="start-sim">Empezar simulacro</button>
   </form>
-  ${simHistory()}`;
+  ${subjects.map((subject) => `<div data-sim-history="${esc(subject.id)}" ${subject.id === subjectId ? "" : "hidden"}>${simHistory(subject.id)}</div>`).join("")}`;
 }
 
-function simHistory() {
-  const sims = getProgress().sims.filter((sim: any) => sim.subjectId === "ad" && sim.kind !== "err");
+function simHistory(subjectId: string) {
+  const sims = getProgress().sims.filter((sim: any) => sim.subjectId === subjectId && sim.kind !== "err");
   if (!sims.length) return `<section class="card"><h2>Historial</h2><p class="muted">Cuando entregues un simulacro, la nota se queda aquí.</p></section>`;
   const last = sims[sims.length - 1];
   const prev = sims.length > 1 ? sims[sims.length - 2] : null;
-  return `<section class="card"><h2>Historial de Acceso a Datos</h2>
+  return `<section class="card"><h2>Historial · ${esc(subjectName(subjectId))}</h2>
     <p>Última nota: <b>${formatGrade(last.grade)}</b>${prev ? `. La anterior fue ${formatGrade(prev.grade)} (${last.grade - prev.grade >= 0 ? "+" : ""}${formatGrade(last.grade - prev.grade)}).` : ". Hace falta otro simulacro para ver una evolución."}</p>
     <ul class="plain">${sims
       .slice(-8)
@@ -408,7 +350,7 @@ function review() {
   return `<section><h1>Repaso</h1><p class="lead">La cola solo incluye preguntas que ya respondiste y cuyo plazo ha llegado. Un acierto el mismo día del fallo no las saca de pendientes.</p>
     ${due.length ? `<button type="button" class="btn" data-act="start-due">Repasar ${due.length}</button>` : ""}
   </section>
-  <section class="card"><h2>Para hoy</h2>${due.length ? `<ul class="plain">${due.slice(0, 12).map((item) => `<li>${esc(subconceptById(item.subconceptId)?.title || "")} · ${rich(item.stem).slice(0, 110)}</li>`).join("")}</ul>` : `<p class="muted">No tienes repasos vencidos.</p>`}</section>
+  <section class="card"><h2>Para hoy</h2>${due.length ? `<ul class="plain">${due.slice(0, 12).map((item) => `<li>${esc(subconceptById(item.subconceptId)?.title || "")} · ${rich(item.stem.slice(0, 110))}</li>`).join("")}</ul>` : `<p class="muted">No tienes repasos vencidos.</p>`}</section>
   <section class="card"><h2>Puntos flojos</h2>${
     weak.length
       ? `<ul class="plain">${weak
@@ -438,7 +380,7 @@ function progressPage() {
     "ad",
     bank.concepts.filter((concept) => concept.subjectId === "ad").length,
   );
-  const concepts = bank.concepts.filter((concept) => concept.subjectId === "ad");
+  const concepts = bank.concepts.filter((concept) => concept.subjectId === "ad" || concept.subjectId === JAVA_SUBJECT);
   const answered = progress.log.length;
   const correct = progress.log.filter((event: any) => event.r === "o").length;
   return `<section><h1>Mi progreso</h1><p class="lead">${answered} respuestas guardadas en este navegador. ${answered ? `${Math.round((correct / answered) * 100)} % marcadas como acierto.` : "Todavía no hay historial."}</p></section>
@@ -456,7 +398,7 @@ function progressPage() {
   <section class="card"><h2>Logros</h2><ul class="plain">${Object.entries(ACHIEVEMENT_LABELS)
     .map(([id, label]) => `<li>${progress.achievements.includes(id) ? "Conseguido" : "Pendiente"} · ${esc(label)}</li>`)
     .join("")}</ul><p class="muted">No hay ranking ni comparación con otras personas.</p></section>
-  <section class="card"><h2>Actividad</h2><p>${Object.keys(days).length} días con alguna respuesta. Preguntas vistas: ${bank.items.filter((item) => states[item.id]?.n).length} de ${bank.items.length}.</p>
+  <section class="card"><h2>Actividad</h2><p>${Object.entries(progress.xpByDay).sort(([a], [b]) => b.localeCompare(a)).slice(0, 7).map(([day, xp]) => `${esc(day)} · ${xp} XP`).join(" | ")}</p><p>${Object.keys(days).length} días con alguna respuesta. Preguntas vistas: ${bank.items.filter((item) => states[item.id]?.n).length} de ${bank.items.length}.</p>
     <h3>Últimas respuestas</h3>
     ${
       progress.log.length
@@ -508,7 +450,7 @@ function sessionPage() {
     return `<section class="card"><h1>No hay sesión</h1><p>Elige un test, un simulacro o un repaso.</p><a class="btn" href="#/practicar">Practicar</a></section>`;
   }
   if (resume.stage === "done") return resultPage(resume);
-  if (resume.mode === "sim" && resume.stage === "confirm") return confirmPage(resume);
+  if (resume.mode === "sim" && resume.stage === "confirm") return timer(resume) + confirmPage(resume);
   const index = Math.min(resume.index || 0, resume.ids.length - 1);
   const id = resume.ids[index];
   const item = itemById(id);
@@ -516,8 +458,8 @@ function sessionPage() {
   const key = resume.mode === "sim" ? item.id : `${item.id}#${index}`;
   const answer = resume.answers?.[key];
   const modeName = resume.mode === "sim" ? "Simulacro" : resume.mode === "due" ? "Repaso" : resume.mode === "errors" ? "Errores" : "Práctica";
-  return `<section class="session">
-    <div class="row spread"><p class="muted">${modeName} · ${index + 1} de ${resume.ids.length}</p><button type="button" class="btn ghost" data-act="forget">Guardar y salir</button></div>
+  return `${timer(resume)}<section class="session">
+    <div class="row spread"><p class="muted">${modeName} · ${index + 1} de ${resume.ids.length}</p><a class="btn ghost" href="#/">Guardar y salir</a></div>
     <div class="bar" aria-hidden="true"><span style="width:${((index + (answer ? 1 : 0)) / resume.ids.length) * 100}%"></span></div>
     <article class="card">
       <p class="kicker">${esc(subconceptById(item.subconceptId)?.title || conceptById(item.conceptId)?.title || "")}</p>
@@ -525,10 +467,15 @@ function sessionPage() {
       ${item.code ? `<pre class="code">${esc(item.code)}</pre>` : ""}
       ${resume.why?.[item.id] ? `<p class="muted">${esc(resume.why[item.id])}</p>` : ""}
       ${item.kind === "self-check" ? selfCheck(item, answer) : choices(item, answer, resume.mode === "sim")}
-      <div id="feedback" aria-live="polite">${answer && resume.mode !== "sim" ? feedback(item, answer) : ""}</div>
+      <div id="feedback" tabindex="-1" aria-live="polite">${answer && resume.mode !== "sim" ? answer.hint ? `<div class="callout ko"><strong>Prueba otra vez</strong><p>${esc(item.examHint)}</p></div>` : feedback(item, answer) : ""}</div>
       <div class="row">${sessionButtons(item, answer, resume, index)}</div>
     </article>
   </section>`;
+}
+
+function timer(resume: any) {
+  if (resume.mode !== "sim" || !Number.isFinite(resume.cfg?.deadline)) return "";
+  return `<p class="timer">Tiempo restante · <span id="sim-timer" data-deadline="${resume.cfg.deadline}">Calculando…</span></p>`;
 }
 
 function choices(item: any, answer: any, hidden: boolean) {
@@ -537,8 +484,8 @@ function choices(item: any, answer: any, hidden: boolean) {
   return `<div id="ops" role="group" aria-labelledby="qt">${(item.options || [])
     .map((option: any) => {
       const mark = selected.has(option.letter) ? "checked" : "";
-      const locked = answer && !hidden ? "disabled" : "";
-      return `<label class="option ${answer && !hidden ? optionClass(item, option.letter) : ""}"><input type="${type}" name="opt" value="${esc(option.letter)}" ${mark} ${locked}> <span><b>${esc(option.letter)})</b> ${rich(option.text)}</span></label>`;
+      const locked = answer && !answer.hint && !hidden ? "disabled" : "";
+      return `<label class="option ${answer && !answer.hint && !hidden ? optionClass(item, option.letter) : ""}"><input type="${type}" name="opt" value="${esc(option.letter)}" ${mark} ${locked}> <span><b>${esc(option.letter)})</b> ${rich(option.text)}</span></label>`;
     })
     .join("")}</div>`;
 }
@@ -571,8 +518,8 @@ function sessionButtons(item: any, answer: any, resume: any, index: number) {
   if (item.kind === "self-check") {
     return answer?.r ? `<button type="button" class="btn" data-act="next">${index + 1 < resume.ids.length ? "Siguiente" : "Ver resultado"}</button>` : "";
   }
-  if (!answer) {
-    return `<button type="button" class="btn" data-act="check">Comprobar</button><button type="button" class="btn ghost" data-act="blank">No lo sé</button>`;
+  if (!answer || answer.hint) {
+    return `<button type="button" class="btn" data-act="check">${answer?.hint ? "Reintentar" : "Comprobar"}</button><button type="button" class="btn ghost" data-act="blank">No lo sé</button>`;
   }
   return `<button type="button" class="btn" data-act="next">${index + 1 < resume.ids.length ? "Siguiente" : "Ver resultado"}</button>`;
 }
@@ -596,6 +543,12 @@ function resultPage(resume: any) {
   return `<section class="card"><h1>${exam ? "Resultado del simulacro" : "Resultado de la práctica"}</h1>
     <div class="grid three"><article class="card"><b>${result.ok}</b><span>aciertos</span></article><article class="card"><b>${result.ko}</b><span>fallos</span></article><article class="card"><b>${result.bl}</b><span>en blanco</span></article></div>
     ${exam ? `<p>Nota orientativa: <b>${formatGrade(result.grade || 0)}</b> sobre 10. Puntos ${result.score}. ${esc(result.label || "")}</p>` : `<p>En la práctica un acierto vale 1 y el resto 0. No es la nota del examen.</p>`}
-    <div class="row"><button type="button" class="btn ghost" data-act="forget">Cerrar</button>${result.wrongIds?.length ? `<button type="button" class="btn" data-act="review-session-errors">Repasar errores</button>` : ""}<a class="btn ghost" href="#/progreso">Ver progreso</a></div>
+    ${exam && result.wrongIds?.length ? `<section class="exam-errors"><h2>Qué repasar</h2>${result.wrongIds.map((id: string) => {
+      const item = itemById(id);
+      if (!item) return "";
+      const solution = item.options?.filter((option) => item.correct?.includes(option.letter)).map((option) => option.text).join(" · ");
+      return `<details><summary>${rich(item.stem)}</summary><p><strong>Respuesta:</strong> ${rich(solution)}</p>${item.generalRationale ? `<p>${rich(item.generalRationale)}</p>` : ""}${item.options?.filter((option) => option.rationale).map((option) => `<p>${esc(option.letter)}) ${rich(option.rationale)}</p>`).join("") || ""}</details>`;
+    }).join("")}</section>` : ""}
+    <div class="row"><button type="button" class="btn ghost" data-act="forget">Cerrar</button>${result.wrongIds?.length ? `<button type="button" class="btn" data-act="review-session-errors">Repasar errores</button>` : ""}<a class="btn ghost" href="#/progreso">Ver progreso</a>${resume.subjectId === JAVA_SUBJECT ? `<a href="#/mi-ruta">Volver al itinerario Java</a>` : ""}</div>
   </section>`;
 }
