@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/competency.schema.json",
+  "title": "Competencia",
+  "description": "Resultado de aprendizaje o competencia profesional. Si el texto oficial no está en la fuente, statement es null.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "program",
+    "moduleCode",
+    "code",
+    "statement",
+    "statementStatus",
+    "sourceLabel",
+    "conceptIds",
+    "provenance",
+    "revision"
+  ],
+  "properties": {
+    "id": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "program": { "enum": ["DAM", "DAW", "SMR", "ASIR", "professional"] },
+    "moduleCode": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "code": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "statement": { "type": ["string", "null"], "minLength": 1, "maxLength": 2000 },
+    "statementStatus": {
+      "enum": ["official-wording-not-in-source", "quoted-from-source", "supplied-by-editor"]
+    },
+    "sourceLabel": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "conceptIds": {
+      "type": "array",
+      "items": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" }
+    },
+    "provenance": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/provenance" },
+    "revision": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/revision" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "statementStatus": { "const": "official-wording-not-in-source" } },
+        "required": ["statementStatus"]
+      },
+      "then": { "properties": { "statement": { "type": "null" } } }
+    },
+    {
+      "if": {
+        "properties": { "statementStatus": { "const": "quoted-from-source" } },
+        "required": ["statementStatus"]
+      },
+      "then": { "properties": { "statement": { "type": "string", "minLength": 1 } } }
+    }
+  ]
+}

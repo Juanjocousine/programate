@@ -1,0 +1,25 @@
+{
+  "id": "term.ad.hashmap",
+  "legacyTitle": "HashMap",
+  "title": "HashMap",
+  "subjectId": "ad",
+  "topic": "Colecciones",
+  "conceptIds": [
+    "col.elegir"
+  ],
+  "definition": "Mapa sin orden garantizado. Muy rápido buscando por clave.",
+  "analogy": "La agenda sin orden. Muy rápida buscando por clave.",
+  "examCue": "Map sin orden → HashMap.",
+  "snippet": "new HashMap<>()",
+  "provenance": {
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20",
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "dic[t=HashMap][a=ad]"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Texto copiado del diccionario. No reescrito."
+  }
+}

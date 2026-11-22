@@ -1,0 +1,25 @@
+{
+  "id": "term.ad.treemap",
+  "legacyTitle": "TreeMap",
+  "title": "TreeMap",
+  "subjectId": "ad",
+  "topic": "Colecciones",
+  "conceptIds": [
+    "col.elegir"
+  ],
+  "definition": "Mapa ordenado por clave.",
+  "analogy": "La agenda ordenada por la clave, como un diccionario de verdad.",
+  "examCue": "Map ordenado por clave → TreeMap.",
+  "snippet": "{a=2, b=3, c=1}",
+  "provenance": {
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20",
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "dic[t=TreeMap][a=ad]"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Texto copiado del diccionario. No reescrito."
+  }
+}

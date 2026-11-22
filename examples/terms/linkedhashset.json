@@ -1,0 +1,25 @@
+{
+  "id": "term.ad.linkedhashset",
+  "legacyTitle": "LinkedHashSet",
+  "title": "LinkedHashSet",
+  "subjectId": "ad",
+  "topic": "Colecciones",
+  "conceptIds": [
+    "col.elegir"
+  ],
+  "definition": "Conjunto sin repetidos que conserva el orden de inserción.",
+  "analogy": "Un conjunto sin repetidos que recuerda el orden en que fueron entrando.",
+  "examCue": "Sin repetidos + orden de inserción → LinkedHashSet.",
+  "snippet": "[z, a, m]",
+  "provenance": {
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20",
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "dic[t=LinkedHashSet][a=ad]"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Texto copiado del diccionario. No reescrito."
+  }
+}

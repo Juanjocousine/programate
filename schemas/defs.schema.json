@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/defs.schema.json",
+  "title": "Definiciones compartidas de Programate",
+  "description": "Identificadores, procedencia y revisión. Los textos académicos viven en las entidades, no aquí.",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "legacyQuestionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "pattern": "^(ad-n|ad|di|sge|psp)[0-9]+$|^dig[0-9]+_[0-9]+$"
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "status"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 },
+        "status": {
+          "enum": ["extracted", "needs-review", "reviewed", "verified-by-execution", "retired"]
+        },
+        "note": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "locator", "transform", "extractedAt"],
+      "properties": {
+        "sourceId": { "$ref": "#/$defs/id" },
+        "locator": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "transform": {
+          "enum": ["verbatim", "verbatim-assembly", "structural-only"]
+        },
+        "extractedAt": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "col.elegir",
+  "title": "Elegir la colección adecuada",
+  "topic": "Colecciones",
+  "confusion": "qué colección usar según orden, repetidos y acceso",
+  "subjectId": "ad",
+  "termIds": [
+    "term.ad.arraylist",
+    "term.ad.linkedlist",
+    "term.ad.hashset",
+    "term.ad.treeset",
+    "term.ad.hashmap",
+    "term.ad.treemap",
+    "term.ad.linkedhashset"
+  ],
+  "prerequisiteIds": [],
+  "competencyIds": [],
+  "provenance": {
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "concepts.col.elegir",
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Campos n, t, conf, s y terms copiados. No se ha escrito un resumen nuevo."
+  }
+}

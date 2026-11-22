@@ -1,0 +1,21 @@
+{
+  "id": "competency.ad.ra2",
+  "program": "DAM",
+  "moduleCode": "ad",
+  "code": "RA2",
+  "statement": null,
+  "statementStatus": "official-wording-not-in-source",
+  "sourceLabel": "RA2 · JDBC",
+  "conceptIds": [],
+  "provenance": {
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "docs de AD, títulos que contienen RA2 · JDBC",
+    "transform": "structural-only",
+    "extractedAt": "2026-11-20"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Solo consta la etiqueta. El texto oficial no está en la fuente y no se ha redactado. No se vincula a col.elegir."
+  }
+}

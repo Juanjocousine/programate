@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/term.schema.json",
+  "title": "Término de glosario",
+  "description": "Entrada de diccionario. El texto se copia de la fuente; no se reescribe aquí.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "legacyTitle",
+    "title",
+    "subjectId",
+    "topic",
+    "conceptIds",
+    "definition",
+    "analogy",
+    "examCue",
+    "snippet",
+    "provenance",
+    "revision"
+  ],
+  "properties": {
+    "id": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "legacyTitle": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "subjectId": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "topic": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "conceptIds": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" }
+    },
+    "definition": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "analogy": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "examCue": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "snippet": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "provenance": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/provenance" },
+    "revision": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/revision" }
+  }
+}

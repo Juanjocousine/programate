@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/source.schema.json",
+  "title": "Fuente",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "kind",
+    "authors",
+    "license",
+    "personalData",
+    "redistribution",
+    "localPath",
+    "sha256",
+    "bytes",
+    "capturedAt"
+  ],
+  "properties": {
+    "id": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "kind": {
+      "enum": ["single-file-app", "notes", "question-bank", "curriculum", "generated", "other"]
+    },
+    "authors": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 120 }
+    },
+    "authorsNote": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "license": {
+      "enum": [
+        "unspecified",
+        "all-rights-reserved",
+        "cc-by-4.0",
+        "cc-by-sa-4.0",
+        "cc-by-nc-4.0",
+        "proprietary",
+        "internal-use"
+      ]
+    },
+    "rightsNote": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "personalData": { "type": "boolean" },
+    "redistribution": { "enum": ["not-cleared", "cleared"] },
+    "localPath": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "bytes": { "type": "integer", "minimum": 1 },
+    "capturedAt": { "type": "string", "format": "date" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "redistribution": { "const": "cleared" } },
+        "required": ["redistribution"]
+      },
+      "then": {
+        "properties": { "license": { "not": { "const": "unspecified" } } }
+      }
+    }
+  ]
+}

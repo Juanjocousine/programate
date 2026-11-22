@@ -1,0 +1,150 @@
+{
+  "catalogVersion": 1,
+  "note": "Importes y cupos de estudio, en noviembre de 2026. No son precios publicados. Cambiar este archivo no exige cambiar la aplicación.",
+  "features": [
+    {
+      "id": "content.core",
+      "kind": "boolean",
+      "metered": false,
+      "description": "Lecciones, conceptos y diccionario"
+    },
+    {
+      "id": "assessment.practice",
+      "kind": "boolean",
+      "metered": false,
+      "description": "Tests, simulacros y explicaciones del banco"
+    },
+    {
+      "id": "learning.srs",
+      "kind": "boolean",
+      "metered": false,
+      "description": "Repaso espaciado y progreso de conceptos"
+    },
+    {
+      "id": "progress.local",
+      "kind": "boolean",
+      "metered": false,
+      "description": "Registro de respuestas en el dispositivo y exportación"
+    },
+    {
+      "id": "progress.sync",
+      "kind": "boolean",
+      "metered": false,
+      "description": "Sincronizar el mismo registro entre dispositivos"
+    },
+    {
+      "id": "personalization.plan",
+      "kind": "boolean",
+      "metered": false,
+      "description": "Objetivo diario y ajuste de la ruta"
+    },
+    {
+      "id": "practice.professional",
+      "kind": "boolean",
+      "metered": false,
+      "description": "Proyectos y práctica profesional cuando existan en el banco"
+    },
+    {
+      "id": "tutor.turns",
+      "kind": "quota",
+      "metered": true,
+      "unit": "turns",
+      "period": "month",
+      "description": "Turnos del tutor sobre el banco revisado"
+    },
+    {
+      "id": "code.runs",
+      "kind": "quota",
+      "metered": true,
+      "unit": "runs",
+      "period": "month",
+      "description": "Ejecuciones aisladas de código del alumno"
+    },
+    {
+      "id": "code.cpu_seconds",
+      "kind": "quota",
+      "metered": true,
+      "unit": "seconds",
+      "period": "month",
+      "description": "Segundos de CPU del ejecutor aislado"
+    }
+  ],
+  "plans": [
+    {
+      "id": "free",
+      "name": "Free",
+      "audience": "individual",
+      "prices": [
+        { "amountCents": 0, "currency": "eur", "interval": "month", "priceStatus": "study" }
+      ],
+      "grants": {
+        "content.core": { "enabled": true },
+        "assessment.practice": { "enabled": true },
+        "learning.srs": { "enabled": true },
+        "progress.local": { "enabled": true },
+        "progress.sync": { "enabled": false },
+        "personalization.plan": { "enabled": false },
+        "practice.professional": { "enabled": false },
+        "tutor.turns": { "enabled": true, "limit": 0 },
+        "code.runs": { "enabled": true, "limit": 0 },
+        "code.cpu_seconds": { "enabled": true, "limit": 0 }
+      }
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "audience": "individual",
+      "prices": [
+        { "amountCents": 699, "currency": "eur", "interval": "month", "priceStatus": "study" }
+      ],
+      "grants": {
+        "content.core": { "enabled": true },
+        "assessment.practice": { "enabled": true },
+        "learning.srs": { "enabled": true },
+        "progress.local": { "enabled": true },
+        "progress.sync": { "enabled": true },
+        "personalization.plan": { "enabled": true },
+        "practice.professional": { "enabled": false },
+        "tutor.turns": { "enabled": true, "limit": 80 },
+        "code.runs": { "enabled": true, "limit": 30 },
+        "code.cpu_seconds": { "enabled": true, "limit": 600 }
+      }
+    },
+    {
+      "id": "premium",
+      "name": "Premium",
+      "audience": "individual",
+      "prices": [
+        { "amountCents": 1299, "currency": "eur", "interval": "month", "priceStatus": "study" }
+      ],
+      "grants": {
+        "content.core": { "enabled": true },
+        "assessment.practice": { "enabled": true },
+        "learning.srs": { "enabled": true },
+        "progress.local": { "enabled": true },
+        "progress.sync": { "enabled": true },
+        "personalization.plan": { "enabled": true },
+        "practice.professional": { "enabled": true },
+        "tutor.turns": { "enabled": true, "limit": 300 },
+        "code.runs": { "enabled": true, "limit": 120 },
+        "code.cpu_seconds": { "enabled": true, "limit": 2400 }
+      }
+    }
+  ],
+  "policies": {
+    "progressRetainedOnDowngrade": true,
+    "coreFeatureIds": ["content.core", "assessment.practice", "learning.srs", "progress.local"],
+    "renewalGraceHours": 6,
+    "pastDueGraceDays": 3,
+    "globalMonthlyBudgetCents": null,
+    "maxInFlightPerAccount": 1
+  },
+  "organizations": {
+    "implemented": false,
+    "seatEntitlementSource": "organization-subscription"
+  },
+  "billingProvider": {
+    "id": "stripe",
+    "activated": false
+  }
+}

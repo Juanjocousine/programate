@@ -1,0 +1,25 @@
+{
+  "id": "term.ad.hashset",
+  "legacyTitle": "HashSet",
+  "title": "HashSet",
+  "subjectId": "ad",
+  "topic": "Colecciones",
+  "conceptIds": [
+    "col.elegir"
+  ],
+  "definition": "Conjunto sin repetidos y sin ningún orden garantizado.",
+  "analogy": "El conjunto sin orden: sacas los elementos en el orden que le da la gana.",
+  "examCue": "Si no se habla de orden, y sin repetidos → HashSet.",
+  "snippet": "new HashSet<>()",
+  "provenance": {
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20",
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "dic[t=HashSet][a=ad]"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Texto copiado del diccionario. No reescrito."
+  }
+}

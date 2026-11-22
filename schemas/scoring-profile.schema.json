@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/scoring-profile.schema.json",
+  "title": "Perfil de puntuación",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "rule", "sourceStatement", "provenance", "revision"],
+  "properties": {
+    "id": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "rule": { "enum": ["ad", "plain"] },
+    "subjectId": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "single": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["correct", "incorrect", "blank"],
+      "properties": {
+        "correct": { "type": "number" },
+        "incorrect": { "type": "number" },
+        "blank": { "type": "number" }
+      }
+    },
+    "multiple": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["correct", "incorrect", "blank", "selectAll", "partial"],
+      "properties": {
+        "correct": { "type": "number" },
+        "incorrect": { "type": "number" },
+        "blank": { "type": "number" },
+        "selectAll": { "const": "blank" },
+        "partial": { "enum": ["proportional-interpretation", "not-applicable"] }
+      }
+    },
+    "sourceStatement": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "partialNote": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "provenance": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/provenance" },
+    "revision": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/revision" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "rule": { "const": "ad" } },
+        "required": ["rule"]
+      },
+      "then": { "required": ["subjectId", "single", "multiple", "partialNote"] }
+    }
+  ]
+}

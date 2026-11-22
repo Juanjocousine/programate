@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "pack.example.col-elegir",
+  "generator": "human-extraction",
+  "generatedAt": "2026-11-20",
+  "description": "Muestra extraída de Mi Chuleta DAM 2.0 sin reescribir el material. Cubre un concepto, sus siete términos y una pregunta. No es el módulo completo.",
+  "files": {
+    "sources": ["sources/michuleta-dam-2.0.json"],
+    "concepts": ["concepts/col.elegir.json"],
+    "terms": [
+      "terms/arraylist.json",
+      "terms/linkedlist.json",
+      "terms/hashset.json",
+      "terms/treeset.json",
+      "terms/hashmap.json",
+      "terms/treemap.json",
+      "terms/linkedhashset.json"
+    ],
+    "items": ["items/ad01.json"],
+    "lessons": ["lessons/col.elegir.muestra.json"],
+    "exercises": [],
+    "competencies": ["competencies/ad.ra2.json"],
+    "routes": ["routes/fp-dam-ad.json", "routes/pro-java-fundamentos.json"],
+    "scoringProfiles": ["scoring/ad-exam.json", "scoring/plain.json"]
+  }
+}

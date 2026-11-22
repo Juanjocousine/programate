@@ -1,0 +1,21 @@
+{
+  "id": "route.pro.java.fundamentos",
+  "title": "Fundamentos de Java",
+  "audience": "professional",
+  "sourceTitle": "Programación (1º)",
+  "sourceStatement": "Fundamentos: variables, bucles, métodos, clases. Hay diccionario; tus apuntes de 1º todavía no están cargados.",
+  "status": "sample",
+  "coverageNote": "La fuente no trae el temario de 1º. Esta ruta de muestra reutiliza el concepto de colecciones que sí está dentro de Acceso a Datos.",
+  "steps": [{ "lessonId": "lesson.col.elegir.muestra" }],
+  "provenance": {
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "others[id=prg]",
+    "transform": "verbatim-assembly",
+    "extractedAt": "2026-11-20"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "El título de producto no sustituye a la frase de la fuente, que queda en sourceStatement."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "route.fp.dam.ad",
+  "title": "Acceso a Datos",
+  "audience": "fp",
+  "program": "DAM",
+  "moduleCode": "ad",
+  "sourceStatement": "Java, ficheros, JSON, JDBC y Hibernate.",
+  "status": "sample",
+  "coverageNote": "Paquete de muestra: un concepto compartido. El módulo completo sigue en la fuente.",
+  "steps": [{ "lessonId": "lesson.col.elegir.muestra" }],
+  "provenance": {
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "subjects[id=ad].n y subjects[id=ad].d",
+    "transform": "verbatim-assembly",
+    "extractedAt": "2026-11-20"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "La fecha y la consigna del examen concreto no entran en el itinerario reutilizable."
+  }
+}

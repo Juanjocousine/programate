@@ -1,0 +1,23 @@
+{
+  "name": "programate",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Academia de programación. MVP local: banco 2.1, motor de estudio y PWA sin servidor.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "validate": "node tools/validate-content.mjs",
+    "test": "node --test engine/*.test.mjs tools/*.test.mjs && node tools/validate-content.mjs"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.2"
+  }
+}

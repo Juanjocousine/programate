@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/item.schema.json",
+  "title": "Pregunta de evaluación",
+  "description": "Pregunta de test o autoevaluación. El identificador legado no se cambia. No es un ejercicio de código libre.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "legacy",
+    "kind",
+    "subjectId",
+    "conceptId",
+    "difficulty",
+    "stem",
+    "origin",
+    "provenance",
+    "revision"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "legacy": { "type": "boolean" },
+    "kind": { "enum": ["multiple-choice", "self-check"] },
+    "subjectId": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "conceptId": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "difficulty": { "type": "integer", "enum": [1, 2, 3] },
+    "stem": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "code": { "type": "string", "minLength": 1, "maxLength": 8000 },
+    "options": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["letter", "text"],
+        "properties": {
+          "letter": { "type": "string", "pattern": "^[a-f]$" },
+          "text": { "type": "string", "minLength": 1, "maxLength": 2000 },
+          "rationale": { "type": "string", "minLength": 1, "maxLength": 2000 }
+        }
+      }
+    },
+    "correct": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^[a-f]$" }
+    },
+    "multiple": { "type": "boolean" },
+    "presentsCode": { "type": "boolean" },
+    "expectedAnswer": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "generalRationale": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "example": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "examHint": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "verification": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "bankLabel": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "origin": { "enum": ["orig", "new", "unspecified"] },
+    "scoringProfileId": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "provenance": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/provenance" },
+    "revision": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/revision" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "kind": { "const": "multiple-choice" } },
+        "required": ["kind"]
+      },
+      "then": { "required": ["options", "correct", "multiple", "presentsCode", "scoringProfileId", "bankLabel"] }
+    },
+    {
+      "if": {
+        "properties": { "kind": { "const": "self-check" } },
+        "required": ["kind"]
+      },
+      "then": { "required": ["expectedAnswer"] }
+    },
+    {
+      "if": {
+        "properties": { "legacy": { "const": true } },
+        "required": ["legacy"]
+      },
+      "then": {
+        "properties": {
+          "id": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/legacyQuestionId" }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "scoring.plain",
+  "rule": "plain",
+  "sourceStatement": "Sin penalización (no hay regla documentada para esta asignatura)",
+  "provenance": {
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "scoreQ, rama plain",
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Acierto 1, cualquier otro resultado 0. No se ha inventado una penalización."
+  }
+}

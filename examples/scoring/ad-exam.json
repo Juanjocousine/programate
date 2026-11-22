@@ -1,0 +1,26 @@
+{
+  "id": "scoring.ad.documented",
+  "rule": "ad",
+  "subjectId": "ad",
+  "single": { "correct": 1, "incorrect": -0.33, "blank": 0 },
+  "multiple": {
+    "correct": 1,
+    "incorrect": -1,
+    "blank": 0,
+    "selectAll": "blank",
+    "partial": "proportional-interpretation"
+  },
+  "sourceStatement": "Respuesta única +1 / −0,33. Múltiple +1 / −1. En blanco 0.",
+  "partialNote": "La fuente documenta +1 / −1 en las múltiples. El código reparte ese punto entre las opciones y lo marca como interpretación no documentada.",
+  "provenance": {
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "subjects[id=ad].how y scoreQ",
+    "transform": "verbatim-assembly",
+    "extractedAt": "2026-11-20"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Se conservan las dos capas: la frase de la fuente y el reparto proporcional del código."
+  }
+}

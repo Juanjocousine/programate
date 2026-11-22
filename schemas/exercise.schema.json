@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/exercise.schema.json",
+  "title": "Ejercicio",
+  "description": "Práctica distinta de una pregunta de test. Escribir código exige un runtime aislado. Esta fase no incluye ningún ejercicio de muestra para no inventar enunciados.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "kind", "conceptIds", "prompt", "runtime", "provenance", "revision"],
+  "properties": {
+    "id": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "kind": { "enum": ["read-code", "write-code", "project"] },
+    "conceptIds": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" }
+    },
+    "prompt": { "type": "string", "minLength": 1, "maxLength": 8000 },
+    "runtime": { "enum": ["none", "isolated-worker"] },
+    "language": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "capability": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$",
+      "description": "Permiso del catálogo que hace falta para usar el ejercicio. No es el nombre de un plan."
+    },
+    "provenance": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/provenance" },
+    "revision": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/revision" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "kind": { "const": "write-code" } },
+        "required": ["kind"]
+      },
+      "then": {
+        "required": ["capability"],
+        "properties": {
+          "runtime": { "const": "isolated-worker" },
+          "capability": { "const": "code.runs" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "kind": { "const": "read-code" } },
+        "required": ["kind"]
+      },
+      "then": { "properties": { "runtime": { "const": "none" } } }
+    },
+    {
+      "if": {
+        "properties": { "runtime": { "const": "isolated-worker" } },
+        "required": ["runtime"]
+      },
+      "then": { "required": ["language"] }
+    },
+    {
+      "if": {
+        "properties": { "kind": { "const": "project" } },
+        "required": ["kind"]
+      },
+      "then": {
+        "required": ["capability"],
+        "properties": {
+          "runtime": { "const": "none" },
+          "capability": { "const": "practice.professional" }
+        }
+      }
+    }
+  ]
+}

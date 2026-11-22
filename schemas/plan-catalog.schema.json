@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/plan-catalog.schema.json",
+  "title": "Catálogo de planes",
+  "description": "Configuración de planes, permisos y límites. Los importes no están fijados en el esquema: viven en el archivo de configuración y pueden cambiar sin tocar la aplicación.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["catalogVersion", "features", "plans", "policies", "organizations", "billingProvider"],
+  "properties": {
+    "catalogVersion": { "const": 1 },
+    "note": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/feature" }
+    },
+    "plans": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/plan" }
+    },
+    "policies": { "$ref": "#/$defs/policies" },
+    "organizations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["implemented", "seatEntitlementSource"],
+      "properties": {
+        "implemented": { "type": "boolean" },
+        "seatEntitlementSource": { "const": "organization-subscription" }
+      }
+    },
+    "billingProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "activated"],
+      "properties": {
+        "id": { "const": "stripe" },
+        "activated": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "featureId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+    },
+    "feature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "metered", "description"],
+      "properties": {
+        "id": { "$ref": "#/$defs/featureId" },
+        "kind": { "enum": ["boolean", "quota"] },
+        "metered": { "type": "boolean" },
+        "unit": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "period": { "enum": ["month"] },
+        "description": { "type": "string", "minLength": 1, "maxLength": 200 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "kind": { "const": "quota" } },
+            "required": ["kind"]
+          },
+          "then": { "required": ["unit", "period"], "properties": { "metered": { "const": true } } }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "boolean" } },
+            "required": ["kind"]
+          },
+          "then": { "properties": { "metered": { "const": false } } }
+        }
+      ]
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "limit": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "price": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amountCents", "currency", "interval", "priceStatus"],
+      "properties": {
+        "amountCents": { "type": "integer", "minimum": 0 },
+        "currency": { "const": "eur" },
+        "interval": { "enum": ["month", "year"] },
+        "priceStatus": { "enum": ["study", "published"] },
+        "stripePriceId": { "type": "string", "minLength": 1, "maxLength": 80 }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "audience", "prices", "grants"],
+      "properties": {
+        "id": { "enum": ["free", "pro", "premium"] },
+        "name": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "audience": { "const": "individual" },
+        "prices": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/price" }
+        },
+        "grants": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$": { "$ref": "#/$defs/grant" }
+          }
+        }
+      }
+    },
+    "policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "progressRetainedOnDowngrade",
+        "coreFeatureIds",
+        "renewalGraceHours",
+        "pastDueGraceDays",
+        "globalMonthlyBudgetCents",
+        "maxInFlightPerAccount"
+      ],
+      "properties": {
+        "progressRetainedOnDowngrade": { "const": true },
+        "coreFeatureIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/featureId" }
+        },
+        "renewalGraceHours": { "type": "integer", "minimum": 0, "maximum": 72 },
+        "pastDueGraceDays": { "type": "integer", "minimum": 0, "maximum": 30 },
+        "globalMonthlyBudgetCents": { "type": ["integer", "null"], "minimum": 0 },
+        "maxInFlightPerAccount": { "type": "integer", "minimum": 1, "maximum": 5 }
+      }
+    }
+  }
+}

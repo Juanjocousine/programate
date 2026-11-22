@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/concept.schema.json",
+  "title": "Concepto",
+  "description": "Unidad de conocimiento reutilizable entre itinerarios. No es una lección ni una pregunta.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "topic",
+    "confusion",
+    "subjectId",
+    "termIds",
+    "prerequisiteIds",
+    "competencyIds",
+    "provenance",
+    "revision"
+  ],
+  "properties": {
+    "id": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "topic": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "confusion": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "subjectId": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "termIds": {
+      "type": "array",
+      "items": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" }
+    },
+    "prerequisiteIds": {
+      "type": "array",
+      "items": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" }
+    },
+    "competencyIds": {
+      "type": "array",
+      "items": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" }
+    },
+    "provenance": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/provenance" },
+    "revision": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/revision" }
+  }
+}

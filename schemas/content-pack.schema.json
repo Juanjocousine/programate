@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/content-pack.schema.json",
+  "title": "Paquete de contenido importable",
+  "description": "Manifiesto que puede escribir una persona o Claude. Cada ruta es un JSON relativo a examples/ o al directorio del paquete. La validación rechaza el paquete antes de incorporarlo.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "generator", "generatedAt", "files"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "$ref": "https://programate.local/schemas/defs.schema.json#/$defs/id" },
+    "generator": { "enum": ["human-extraction", "claude", "script"] },
+    "generatedAt": { "type": "string", "format": "date" },
+    "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sources",
+        "concepts",
+        "terms",
+        "items",
+        "lessons",
+        "exercises",
+        "competencies",
+        "routes",
+        "scoringProfiles"
+      ],
+      "properties": {
+        "sources": { "$ref": "#/$defs/paths" },
+        "concepts": { "$ref": "#/$defs/paths" },
+        "terms": { "$ref": "#/$defs/paths" },
+        "items": { "$ref": "#/$defs/paths" },
+        "lessons": { "$ref": "#/$defs/paths" },
+        "exercises": { "$ref": "#/$defs/paths" },
+        "competencies": { "$ref": "#/$defs/paths" },
+        "routes": { "$ref": "#/$defs/paths" },
+        "scoringProfiles": { "$ref": "#/$defs/paths" }
+      }
+    }
+  },
+  "$defs": {
+    "paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(sources|concepts|terms|items|lessons|exercises|competencies|routes|scoring)/[a-z0-9][a-z0-9._-]*\\.json$"
+      }
+    }
+  }
+}

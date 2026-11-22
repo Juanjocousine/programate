@@ -1,0 +1,53 @@
+{
+  "id": "ad01",
+  "legacy": true,
+  "kind": "multiple-choice",
+  "subjectId": "ad",
+  "conceptId": "col.elegir",
+  "difficulty": 1,
+  "stem": "¿Qué colección es la más adecuada para guardar libros respetando el orden de inserción y permitiendo repetidos?",
+  "options": [
+    {
+      "letter": "a",
+      "text": "`HashSet`",
+      "rationale": "HashSet es un conjunto: no admite repetidos y no garantiza orden."
+    },
+    {
+      "letter": "b",
+      "text": "`TreeMap`",
+      "rationale": "TreeMap es un mapa (clave → valor) ordenado por clave, no una lista de libros."
+    },
+    {
+      "letter": "c",
+      "text": "`ArrayList`",
+      "rationale": "ArrayList es una lista: mantiene el orden de inserción y admite repetidos. Es la que pide el enunciado."
+    },
+    {
+      "letter": "d",
+      "text": "`HashMap`",
+      "rationale": "HashMap es un mapa sin orden garantizado; no es una lista."
+    }
+  ],
+  "correct": [
+    "c"
+  ],
+  "multiple": false,
+  "presentsCode": false,
+  "generalRationale": "Es una lista.",
+  "example": "List<String> libros = new ArrayList<>();\nlibros.add(\"Quijote\");\nlibros.add(\"Quijote\");   // repetido: vale",
+  "examHint": "Orden + repetidos = lista (ArrayList).",
+  "bankLabel": "Banco AD",
+  "origin": "orig",
+  "scoringProfileId": "scoring.ad.documented",
+  "provenance": {
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "quiz[id=ad01]",
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Enunciado y opciones son del banco original. Las explicaciones por opción constan en la fuente como añadidas allí. Este repositorio no las da por revisadas."
+  }
+}

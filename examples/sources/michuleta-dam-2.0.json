@@ -1,0 +1,15 @@
+{
+  "id": "src.michuleta-dam-2.0",
+  "title": "Mi Chuleta DAM 2.0",
+  "kind": "single-file-app",
+  "authors": [],
+  "authorsNote": "La fuente no nombra autor.",
+  "license": "unspecified",
+  "rightsNote": "La fuente no declara licencia ni permiso de redistribución.",
+  "personalData": true,
+  "redistribution": "not-cleared",
+  "localPath": "sources/MiChuleta_DAM_2.0.html",
+  "sha256": "30499b3f39a302c5cf476f03053e13e2969e9574864aee2cf778d49d820007b8",
+  "bytes": 799428,
+  "capturedAt": "2026-11-20"
+}

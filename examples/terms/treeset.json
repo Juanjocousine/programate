@@ -1,0 +1,25 @@
+{
+  "id": "term.ad.treeset",
+  "legacyTitle": "TreeSet",
+  "title": "TreeSet",
+  "subjectId": "ad",
+  "topic": "Colecciones",
+  "conceptIds": [
+    "col.elegir"
+  ],
+  "definition": "Conjunto sin repetidos y ordenado.",
+  "analogy": "Un conjunto sin repetidos que se mantiene ordenado solo, como una lista de la clase en orden alfabético.",
+  "examCue": "Sin repetidos + ordenado → TreeSet.",
+  "snippet": "[a, m, z]",
+  "provenance": {
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20",
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "dic[t=TreeSet][a=ad]"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Texto copiado del diccionario. No reescrito."
+  }
+}

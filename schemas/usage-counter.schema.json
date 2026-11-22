@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/usage-counter.schema.json",
+  "title": "Contador de consumo",
+  "description": "Consumo de una función medida en un periodo. reserved es una reserva en curso; used ya se ha consumido.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["accountId", "featureId", "periodStart", "periodEnd", "used", "reserved"],
+  "properties": {
+    "accountId": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "featureId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+    },
+    "periodStart": { "type": "string", "format": "date" },
+    "periodEnd": { "type": "string", "format": "date" },
+    "used": { "type": "integer", "minimum": 0 },
+    "reserved": { "type": "integer", "minimum": 0 }
+  }
+}

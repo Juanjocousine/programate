@@ -1,0 +1,25 @@
+{
+  "id": "term.ad.arraylist",
+  "legacyTitle": "ArrayList",
+  "title": "ArrayList",
+  "subjectId": "ad",
+  "topic": "Colecciones",
+  "conceptIds": [
+    "col.elegir"
+  ],
+  "definition": "Lista basada en un array. Rápida para leer por posición, lenta para insertar en medio.",
+  "analogy": "Una lista hecha con una fila de cajones. Ir a un cajón concreto es rapidísimo; meter algo en medio obliga a mover todos los demás.",
+  "examCue": "Si la pregunta habla de leer por posición (get), es ArrayList.",
+  "snippet": "new ArrayList<>()",
+  "provenance": {
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20",
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "dic[t=ArrayList][a=ad]"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Texto copiado del diccionario. No reescrito."
+  }
+}

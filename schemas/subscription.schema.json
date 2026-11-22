@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://programate.local/schemas/subscription.schema.json",
+  "title": "Suscripción individual",
+  "description": "Estado de una suscripción. El plan efectivo se calcula con este estado y el catálogo. No guarda el progreso del alumno.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "accountId",
+    "planId",
+    "status",
+    "currentPeriodStart",
+    "currentPeriodEnd",
+    "cancelAtPeriodEnd",
+    "provider"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "accountId": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "planId": { "enum": ["free", "pro", "premium"] },
+    "status": {
+      "enum": ["incomplete", "trialing", "active", "past_due", "canceled", "expired", "paused"]
+    },
+    "currentPeriodStart": { "type": "integer", "minimum": 0 },
+    "currentPeriodEnd": { "type": "integer", "minimum": 0 },
+    "cancelAtPeriodEnd": { "type": "boolean" },
+    "scheduledPlanId": { "enum": ["free", "pro", "premium"] },
+    "trialEndsAt": { "type": "integer", "minimum": 0 },
+    "graceEndsAt": { "type": "integer", "minimum": 0 },
+    "provider": { "enum": ["none", "stripe"] },
+    "providerCustomerId": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "providerSubscriptionId": { "type": "string", "minLength": 1, "maxLength": 80 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "provider": { "const": "none" } },
+        "required": ["provider"]
+      },
+      "then": {
+        "allOf": [
+          { "not": { "required": ["providerCustomerId"] } },
+          { "not": { "required": ["providerSubscriptionId"] } }
+        ]
+      }
+    }
+  ]
+}

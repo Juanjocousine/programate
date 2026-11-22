@@ -1,0 +1,33 @@
+{
+  "id": "lesson.col.elegir.muestra",
+  "title": "Elegir la colección adecuada",
+  "conceptIds": ["col.elegir"],
+  "routeIds": ["route.fp.dam.ad", "route.pro.java.fundamentos"],
+  "blocks": [
+    { "id": "b-arraylist", "type": "term", "termId": "term.ad.arraylist", "role": "explain" },
+    { "id": "b-linkedlist", "type": "term", "termId": "term.ad.linkedlist", "role": "explain" },
+    { "id": "b-hashset", "type": "term", "termId": "term.ad.hashset", "role": "explain" },
+    { "id": "b-treeset", "type": "term", "termId": "term.ad.treeset", "role": "explain" },
+    { "id": "b-hashmap", "type": "term", "termId": "term.ad.hashmap", "role": "explain" },
+    { "id": "b-treemap", "type": "term", "termId": "term.ad.treemap", "role": "explain" },
+    { "id": "b-linkedhashset", "type": "term", "termId": "term.ad.linkedhashset", "role": "explain" },
+    { "id": "b-ad01", "type": "item", "itemId": "ad01", "role": "check" }
+  ],
+  "sample": {
+    "coverage": "partial",
+    "includedItemIds": ["ad01"],
+    "knownSourceItemIds": ["ad01", "ad02", "ad03", "ad04", "ad05", "ad-n01", "ad-n02"],
+    "note": "Las otras preguntas de este concepto siguen en la fuente con su identificador. No forman parte de este paquete."
+  },
+  "provenance": {
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "concepts.col.elegir + dic de sus terms + quiz[id=ad01]",
+    "transform": "verbatim-assembly",
+    "extractedAt": "2026-11-20"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "La lección solo ordena textos ya existentes. No añade explicación nueva."
+  }
+}

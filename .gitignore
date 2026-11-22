@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+
+# Copias privadas de Mi Chuleta. Se quedan en el ordenador y no entran en el repositorio.
+sources/MiChuleta_DAM_2.0.html
+sources/MiChuleta_DAM_2.1.html
+sources/privacy-needles.local.txt

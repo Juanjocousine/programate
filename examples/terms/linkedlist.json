@@ -1,0 +1,25 @@
+{
+  "id": "term.ad.linkedlist",
+  "legacyTitle": "LinkedList",
+  "title": "LinkedList",
+  "subjectId": "ad",
+  "topic": "Colecciones",
+  "conceptIds": [
+    "col.elegir"
+  ],
+  "definition": "Lista de nodos enlazados. Rápida para añadir o quitar al principio o al final.",
+  "analogy": "Una cadena de personas cogidas de la mano. Añadir o quitar al principio o al final es fácil, pero llegar a la posición 50 obliga a contar de uno en uno.",
+  "examCue": "addFirst / addLast / removeFirst → LinkedList.",
+  "snippet": "addFirst(1); addLast(3)",
+  "provenance": {
+    "transform": "verbatim",
+    "extractedAt": "2026-11-20",
+    "sourceId": "src.michuleta-dam-2.0",
+    "locator": "dic[t=LinkedList][a=ad]"
+  },
+  "revision": {
+    "version": 1,
+    "status": "extracted",
+    "note": "Texto copiado del diccionario. No reescrito."
+  }
+}
