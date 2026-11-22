@@ -65,7 +65,7 @@ export function academyHome() {
   const xpByDay: Record<string, number> = progress.xpByDay;
   const java = statsFor(JAVA_SUBJECT, summary);
   const next = units.find((unit) => unit.lesson && (summary.subconcepts[`java-${unit.id}`]?.level || 0) < 2);
-  const resume = progress.resume as { stage: string; index: number; ids: string[] } | null;
+  const resume = progress.resume;
   const resuming = resume && resume.stage !== "done";
   const today = xpByDay[ymd(Date.now())] || 0;
   const week = Array.from({ length: 7 }, (_, i) => {
