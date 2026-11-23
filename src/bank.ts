@@ -1,4 +1,5 @@
 import raw from "../content/bank.json";
+import { JAVA_SUBJECT, javaConcepts, javaItems } from "./java";
 
 export interface Option {
   letter: string;
@@ -75,7 +76,14 @@ export interface Bank {
   symptomPairs: { id: string; symptom: string; cause: string }[];
 }
 
-export const bank = raw as Bank;
+const published = raw as Bank;
+export const bank: Bank = {
+  ...published,
+  subjects: [...published.subjects, { id: JAVA_SUBJECT, name: "Programación de 1.º DAM · piloto Java", short: "Java", description: "Itinerario provisional" }],
+  concepts: [...published.concepts, ...javaConcepts],
+  subconcepts: [...published.subconcepts, ...javaConcepts.map(({ id, title }) => ({ id, title, conceptId: id }))],
+  items: [...published.items, ...javaItems],
+};
 
 const concepts = new Map(bank.concepts.map((concept) => [concept.id, concept]));
 const subs = new Map(bank.subconcepts.map((sub) => [sub.id, sub]));

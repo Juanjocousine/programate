@@ -1,7 +1,9 @@
-import { handle, readImport } from "./actions";
+import "@fontsource-variable/roboto";
+import { handle, readImport, expireSimulation } from "./actions";
 import { render, searchHtml } from "./page";
 import { boot } from "./store";
 import "./styles.css";
+import "./academy.css";
 
 const app = document.querySelector<HTMLElement>("#app");
 
@@ -22,20 +24,54 @@ function draw() {
 
 boot();
 draw();
-window.addEventListener("hashchange", draw);
+window.addEventListener("hashchange", () => {
+  draw();
+  document.querySelector<HTMLElement>("#contenido")?.focus();
+  window.scrollTo(0, 0);
+});
+
+window.setInterval(() => {
+  const timer = document.querySelector<HTMLElement>("#sim-timer");
+  if (!timer) return;
+  const remaining = Math.max(0, Math.ceil((Number(timer.dataset.deadline) - Date.now()) / 1000));
+  timer.textContent = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`;
+  if (!remaining && expireSimulation()) draw();
+}, 250);
 
 app?.addEventListener("click", (event) => {
+  if ((event.target as HTMLElement).closest("[data-skip]")) {
+    event.preventDefault();
+    document.querySelector<HTMLElement>("#contenido")?.focus();
+    return;
+  }
   const node = (event.target as HTMLElement).closest<HTMLElement>("[data-act]");
   if (!node) return;
+  const path = location.hash;
   handle(node.dataset.act || "", node);
-  draw();
+  if (path === location.hash) {
+    draw();
+    const focus = document.querySelector<HTMLElement>("#feedback:not(:empty)") ?? document.querySelector<HTMLElement>("#contenido");
+    focus?.focus();
+  }
 });
 
 app?.addEventListener("change", (event) => {
   const target = event.target as HTMLElement;
-  if (target.id === "practice-subject") {
+  if (target.id === "practice-subject" || target.id === "sim-subject") {
     const subject = (target as HTMLSelectElement).value;
-    document.querySelectorAll<HTMLOptionElement>("#practice-concept option").forEach((option) => {
+    const concept = document.querySelector<HTMLSelectElement>(target.id === "practice-subject" ? "#practice-concept" : "#sim-concept");
+    if (concept) concept.value = "";
+    if (target.id === "sim-subject") {
+      document.querySelectorAll<HTMLElement>("[data-sim-history]").forEach((history) => {
+        history.hidden = history.dataset.simHistory !== subject;
+      });
+      const scoring = document.querySelector<HTMLDetailsElement>(".sim-ad");
+      if (scoring) {
+        scoring.hidden = subject !== "ad";
+        scoring.open = subject === "ad";
+      }
+    }
+    concept?.querySelectorAll<HTMLOptionElement>("option").forEach((option) => {
       option.hidden = !!option.dataset.subject && option.dataset.subject !== subject;
     });
   }
@@ -47,6 +83,10 @@ app?.addEventListener("change", (event) => {
 
 app?.addEventListener("input", (event) => {
   const target = event.target as HTMLElement;
+  if (target.id === "java-draft") {
+    localStorage.setItem("programate.java-draft", (target as HTMLTextAreaElement).value);
+    return;
+  }
   if (target.id !== "search") return;
   const out = document.querySelector("#search-out");
   if (out) out.innerHTML = searchHtml((target as HTMLInputElement).value);
@@ -54,7 +94,7 @@ app?.addEventListener("input", (event) => {
 
 document.addEventListener("keydown", (event) => {
   const tag = (event.target as HTMLElement | null)?.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || tag === "BUTTON" || tag === "A") return;
   if (!location.hash.startsWith("#/sesion")) return;
   const letter = event.key.toLowerCase();
   if ("abcdef".includes(letter) && letter.length === 1) {

@@ -11,7 +11,22 @@ import {
 } from "../engine/progress-file.mjs";
 import { collectAchievements, touchStreak, xpForAnswer } from "../engine/xp.mjs";
 
-export type Progress = ReturnType<typeof emptyProgress>;
+type Session = {
+  mode: string;
+  subjectId: string;
+  ids: string[];
+  index: number;
+  answers: Record<string, { sel?: string[]; done?: number; shown?: number; hint?: boolean; r?: string }>;
+  stage: string;
+  cfg?: { pen: boolean; multi: string; deadline?: number } | null;
+  startedAt: number;
+  why: Record<string, string>;
+  retries: Record<string, number>;
+  results?: { ok: number; ko: number; bl: number; wrongIds: string[]; score?: number; grade?: number; label?: string } | null;
+};
+
+type SavedProgress = ReturnType<typeof emptyProgress>;
+export type Progress = Omit<SavedProgress, "resume"> & { resume: Session | null };
 
 let progress: Progress = emptyProgress();
 let notices: { id: string; text: string }[] = [];
@@ -141,7 +156,7 @@ export function recordSimulation(sim: any, rows: { question: Item; result: strin
   save();
 }
 
-export function setResume(resume: any) {
+export function setResume(resume: Session) {
   progress.resume = resume;
   save();
 }
